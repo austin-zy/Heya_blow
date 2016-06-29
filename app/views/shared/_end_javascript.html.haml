@@ -1,0 +1,7 @@
+= javascript_include_tag 'community_engine', "data-turbolinks-track" => true, "data-turbolinks-eval" => false
+
+-if show_footer_content?
+  :javascript
+    $(function() {
+      $('#footer-content').updateFromUrl("#{footer_content_path}")
+    });

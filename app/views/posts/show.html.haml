@@ -1,0 +1,86 @@
+%script{"type"=>"text/javascript", "src"=>"http://www.plaxo.com/css/m/js/util.js"}
+%script{"type"=>"text/javascript", "src"=>"http://www.plaxo.com/css/m/js/basic.js"}
+%script{"type"=>"text/javascript", "src"=>"http://www.plaxo.com/css/m/js/abc_launcher.js"}
+
+- @section = (@post.category && @post.category.name)
+- @meta = { :title => "#{@post.title}", :description => "#{truncate_words(@post.post, 75, '...' )}", :keywords => "#{@post.tags.join(", ") unless @post.tags.nil?}", :robots => configatron.robots_meta_show_content }
+
+#send_to_friend.modal.fade{:role => 'dialog', "aria-hidden" => "true", :"aria-labelledby" => "send_to_friend_label", :tabindex => "-1", :style => 'padding-top: 60px;'}
+
+=render :partial => 'author_profile', :locals => {:user => @user}
+
+- unless @related.empty?
+  -widget do
+    %h4
+      .small=:related_posts.l
+    %ul.list-unstyled
+      - @related.each do |post|
+        %li=link_to truncate(post.title, :length => 75), user_post_path(post.user, post)
+
+- unless @popular_posts.empty?
+  -widget do
+    %h4
+      .small=:popular_posts.l
+    %ul.list-unstyled
+      - @popular_posts.each do |post|
+        %li=link_to truncate(post.title, :length => 75), user_post_path(post.user, post)
+
+%h2=:users_blog.l :user=>  @user.login
+.clearfix
+  .pull-right.col-sm-3
+    .list-group
+      %a.list-group-item{:href => "#{user_post_path(@user, @post)}", :rel => "bookmark"}
+        =fa_icon "calendar fw"
+        %abbr.published{:title => "#{@post.published_at}"}= @post.published_at_display(:literal_date)
+      %li.list-group-item
+        =fa_icon "eye fw", :text => :view_count.l
+        %span.badge= @post.view_count
+      %a.list-group-item{:href => "#{user_post_path(@user, @post)}", :name => 'comments'}
+        =fa_icon "comment fw", :text => :comments.l
+        %span.badge.badge-info=@post.comments.count
+      - if current_user and current_user.can_request_friendship_with(@post.user)
+        %li.list-group-item
+          = add_friend_link(@post.user)
+      %a.list-group-item{:href => "#", :onclick=>"window.print(); return false;", :title=>:print_this_story.l}
+        =fa_icon "print fw", :text => :print.l
+      %a.email.list-group-item{:href => "#", :title => :email_this_story_to_friends.l}
+        =fa_icon "envelope fw", :text => :email_to_friends.l
+      %li.list-group-item
+        %script{:type=>"text/javascript", :src=>"http://w.sharethis.com/widget/?tabs=web&amp;charset=utf-8&amp;style=default&amp;publisher=4488bdef-d776-4c80-93e1-ac1fb8359971&amp;linkfg=%23131358&amp;button=false"}
+        =sharethis_options(@post)
+      -if @is_current_user || admin? || moderator?
+        %a.list-group-item{:href => "#{edit_user_post_path(@post.user, @post)}"}
+          =fa_icon "pencil-square-o fw", :text => :edit.l
+        = link_to fa_icon("trash-o fw", :text => :delete.l), user_post_path(@post.user, @post), {:method => :delete, data: { confirm: :permanently_delete_this_post.l }, :class => "list-group-item"}
+  = @post.post.html_safe
+/ clearfix
+
+= render :partial => 'polls/poll_ui', :locals => {:poll => @post.polls.first} unless @post.polls.empty?
+- unless @post.tags.empty?
+  .clearfix
+    %ul.list-unstyled
+      - @post.tags.each do |t|
+        %li
+          %a.label.label-info{:href => tag_url(t), :rel => 'tag'}
+            =fa_icon "tag inverse", :text => t.name
+
+%h2= :post_comments.l
+%h3= :add_your_comment.l
+= render :partial => 'comments/comment_form', :locals => {:commentable => @post}
+%a#newest_comment
+= render :partial => 'comments/comment', :collection => @comments
+%span#more_comments_links= more_comments_links(@post)
+
+-content_for :end_javascript do
+  :javascript
+    $.ajax({
+      type: "PATCH",
+      url: "#{update_views_user_post_path(@post.user, @post)}",
+    });
+    $('.email').on('click', function(e){
+      e.preventDefault();
+      $.post("#{send_to_friend_user_post_path(:user_id => @user.id, :id => @post.id)}", function(response){
+        $('#send_to_friend').html(response);
+      });
+      $('#send_to_friend').modal();
+    });

@@ -1,0 +1,46 @@
+@import 'bootstrap-sprockets';
+@import 'bootstrap';
+@import url(https://fonts.googleapis.com/css?family=Lora);
+@import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
+
+body {
+  	font-family: 'Lora', serif;
+	margin : 0px;
+ 	
+}
+
+a {
+    text-decoration: none !important;
+}
+
+.jumbotron{
+    	background-image: url('jumbotron.jpg');
+    	background-repeat: no-repeat;
+    	background-attachment: fixed;
+    	background-position: center;
+	color : #FFFFFF;
+	font-family: 'Montserrat', sans-serif;
+
+
+}
+
+// .row-fluid [class*='span'].pull-right, .row [class*='span'].pull-right{
+//   float: right;
+// }
+// .row>[class*='span']:first-child {
+//   margin-left: 0;
+// }
+
+
+.clear-right {
+  clear: right;
+}
+
+.clear-left {
+  clear: left;
+}
+
+.clear-all, .clear-both {
+  clear: both;
+}
+

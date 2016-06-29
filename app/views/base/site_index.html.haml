@@ -1,0 +1,33 @@
+- @page_title = configatron.community_name + ' ' + :home.l
+- @meta = { :description => configatron.meta_description, :keywords => configatron.meta_keywords, :robots => configatron.robots_meta_list_content }
+
+-unless logged_in?
+  =render :partial => 'base/homepage_banner_message'
+
+-box :class => "hfeed" do 
+  %h2
+    =:recent_posts.l
+  = render :partial => 'posts/post', :collection => @posts
+  =link_to fa_icon('plus-circle', :text => :see_all_recent_posts.l), recent_path
+
+=render :partial => 'shared/explore'
+
+-widget do
+  %h4
+    .small= :whats_hot.l
+  %ul.list-unstyled
+    -@popular_posts.each do |post|
+      =render :partial => 'posts/sidebar_post', :locals => {:post => post}
+  =link_to fa_icon('plus-circle', :text => :see_all.l), popular_url
+
+-widget do
+  %h4
+    .small=:featured_writer.l
+  -@featured_writers.each do |user|
+    =render :partial => "users/sidebar_user", :locals => {:user => user}
+
+-widget do
+  %h4
+    .small= :active_users.l
+  -@active_users.each do |user|
+    =render :partial => "users/sidebar_user", :locals => {:user => user}

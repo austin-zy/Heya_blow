@@ -1,0 +1,40 @@
+#location_chooser
+  %label= :country.l
+  = select_tag(:country_id, options_from_collection_for_select(Country.find_countries_with_metros, "id", "name", selected_country), {:include_blank => true, :class => "form-control"})
+
+  %br
+  %label= :state.l
+  = select_tag(:state_id, options_from_collection_for_select(states, "id", "name", (selected_state rescue nil)), {:disabled => states.empty?, :class => "form-control" })
+
+  = ajax_spinner_for 'location_chooser'
+
+  %br
+  %label= :metro_area.l
+  = select_tag(:metro_area_id, options_from_collection_for_select(metro_areas, "id", "name", (selected_metro_area rescue nil)), {:disabled => metro_areas.empty?, :class => "form-control" })
+
+  = ajax_spinner_for 'location_chooser'
+
+- js ||= nil
+- if js
+  :javascript
+    function refreshLocationChooser(html) {
+      $('#location_chooser').html(html);
+      $('#location_chooser img').addClass('hide');
+    }
+    $(document).on('change', '#country_id', function(){
+      $('#location_chooser img').removeClass('hide');
+      $.post('#{users_metro_area_update_path}?country_id=' + $('#country_id').val(), {}, refreshLocationChooser);
+    });
+    $(document).on('change', '#state_id', function(){
+      $('#location_chooser img').removeClass('hide');
+      $.post('#{users_metro_area_update_path}?country_id=' + $('#country_id').val() + '&state_id=' + $('#state_id').val(), {}, refreshLocationChooser);
+    });
+- else
+  -content_for :end_javascript do
+    :javascript
+      $(document).on('change', '#country_id', function(){
+        updateElementFromPost($('#location_chooser'), '#{users_metro_area_update_path}?country_id=' + $('#country_id').val());
+      });
+      $(document).on('change', '#state_id', function(){
+        updateElementFromPost($('#location_chooser'), '#{users_metro_area_update_path}?country_id=' + $('#country_id').val() + '&state_id=' + $('#state_id').val());
+      });

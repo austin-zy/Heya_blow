@@ -1,0 +1,19 @@
+@import 'rails_bootstrap_forms';
+
+.rich_text_editor {
+	width: 100%;
+}
+
+
+.required {
+  font-weight: bold;
+  &:before {
+    content: '(*Required) ';
+    display: inline;
+  }
+}
+
+
+form.button_to, form.button_to div {
+  display: inline;
+}

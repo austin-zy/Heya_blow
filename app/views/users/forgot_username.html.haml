@@ -1,0 +1,7 @@
+-@page_title=:forgot_your_username.l
+=render :partial => 'shared/login_sidebar'
+
+= bootstrap_form_tag :url => forgot_username_path, :layout => :horizontal do |f|
+  = f.email_field :email, :label => :enter_your_email_address.l
+  = f.form_group :submit_group do
+    = f.primary :send_me_my_username.l

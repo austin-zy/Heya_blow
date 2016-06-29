@@ -1,0 +1,33 @@
+-@page_title=:sign_up.l
+
+-widget do
+  %h4
+    .small=:why_sign_up.l
+  %p= :sign_up_reason_1.l
+  %p= :sign_up_reason_2.l
+
+-widget do
+  %h3=:tips.l
+  %p
+    =:after_signing_up_youll_receive_an_e_mail_confirmation_message.l
+  %p
+    =:click_the_activation_link_in_the_e_mail_to_log_in.l
+  %p= link_to :already_have_an_account.l,  login_path
+
+
+= bootstrap_form_for @user, :layout => :horizontal do |f|
+  = f.text_field :login, :label => :username.l, :help => :required_your_username_must_not_contain_numerals_spaces_or_special_characters.l
+  = f.text_field :email, :label => :e_mail_address.l, :help => :required_we_will_send_a_confirmation_e_mail_to_the_address_you_enter.l
+  = f.date_select :birthday, {:start_year => (Time.now.year - configatron.max_age), :end_year => (Time.now.year - configatron.min_age)}, :help => :required_you_must_be_at_least_years_old_to_sign_up.l_with_args(:min_age => configatron.min_age)
+
+  = f.password_field :password
+  = f.password_field :password_confirmation, :help => :re_type_your_password_to_confirm.l
+  = hidden_field_tag :inviter_id, params[:inviter_id]
+  = hidden_field_tag :inviter_code, params[:inviter_code]
+
+  -if configatron.require_captcha_on_signup
+    = f.form_group do
+      = recaptcha_tags
+
+  = f.form_group :submit_group do
+    = f.primary :sign_up.l
